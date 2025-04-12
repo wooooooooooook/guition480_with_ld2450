@@ -1,25 +1,41 @@
+## 이 구성에 사용되는 secrets는 다음과 같습니다.
+## !secret encryption_key
+## !secret ota_password
+## !secret wifi_ssid
+## !secret wifi_password
+## !secret fallback_password
+
 substitutions:
   name: "guition-esp32-s3-4848s040"
   friendly_name: "Guition480-basic"
   wifi_fallback_ssid: "Guitionv1 Fallback Hotspot"
   device_description: "Guition ESP32-S3-4848S040 480*480 Smart Screen"
-  project_name: "Guition.ESP32_S3_4848S040"
-  project_version: "1.0.1"
-  screen_size: "480"
-  max_range_mm: "6000"  # 6m range
 
+# 디스플레이에 표시될 이름과 아이콘
+  light_1_display_name: "Light1"
+  light_1_icon: $mdi_lightbulb
+  light_2_display_name: "Light2"
+  light_2_icon: $mdi_lightbulb
+  light_3_display_name: "Light3"
+  light_3_icon: $mdi_lightbulb
+  custom_switch_1_display_name: "Switch1"
+  custom_switch_1_icon: $mdi_lamp
+  custom_switch_2_display_name: "Switch2"
+  custom_switch_2_icon: $mdi_lamp
+  custom_switch_3_display_name: "Switch3"
+  custom_switch_3_icon: $mdi_lamp
+
+# 사용할 아이콘을 아래와 font: 섹션에 각각 추가하세요요
 # mdi icons http://materialdesignicons.com/cdn/7.4.47/
   mdi_lightbulb: "\U000F0335"
   mdi_radar: "\U000F0437"
   mdi_chevron_double_left: "\U000F013D"
   mdi_lamp: "\U000F06B5"
+  mdi_curtains: "\U000F1846"
 
-# secrets
-# !secret encryption_key
-# !secret ota_password
-# !secret wifi_ssid
-# !secret wifi_password
-# !secret fallback_password
+# web_server:
+#   port: 80
+#   version: 3
 
 color:
   # Create a Home Assistant blue color
@@ -27,32 +43,13 @@ color:
     hex: 51c0f2
 
 #-------------------------------------------
-# Graphics and Fonts
+# Fonts
 #-------------------------------------------
 font:
   - file: "gfonts://Roboto"
     id: roboto24
     size: 24
     bpp: 4
-    # extras:
-    #   # https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/7.4.47/fonts/materialdesignicons-webfont.ttf
-    #   - file: "fonts/materialdesignicons-webfont.ttf" # http://materialdesignicons.com/cdn/7.4.47/
-    #     glyphs:
-    #       [
-    #         "\U000F004B",#mdi_arrow-down-drop-circle-outline
-    #         "\U000F006E",#mdi_backspace
-    #         "\U000F012C",#mdi_check
-    #         "\U000F179B",#mdi_light-recessed
-    #         "\U000F0748",#mdi_wall-sconce-round
-    #         "\U000F1A1B",#mdi_gas-burner
-    #         "\U000F02DC",#mdi_home
-    #         "\U000F0A02",#mdi_menu-left-outline
-    #         "\U000F035F",#mdi_menu-right
-    #         "\U000F0156",#mdi_close
-    #         "\U000F0C5F",#mdi_close-network-outline
-    #         "\U000f0084",#mdi_battery-charging
-    #         "\U000f0091",#mdi_battery-unknown
-    #       ]
 
   - file: "fonts/materialdesignicons-webfont.ttf" # http://materialdesignicons.com/cdn/7.4.47/
     id: light40
@@ -63,6 +60,7 @@ font:
         "\U000F0437", # mdi_radar
         "\U000F013D", # mdi_chevron_double_left
         "\U000F06B5", # mdi_lamp
+        "\U000F1846", # mid_curtains
       ]
       
 esphome:
@@ -98,11 +96,11 @@ esp32:
       CONFIG_SPIRAM_FETCH_INSTRUCTIONS: y
       CONFIG_SPIRAM_RODATA: y
 
+## 블루투스스와 LD2450는 성능상 동시에 사용이 불가. 동시에 활성화할경우 OTA접속이 불가해질 수 있으니 주의.
 # esp32_ble_tracker:
 #   scan_parameters:
 #     window: 30ms
 #     interval: 100ms
-
 # bluetooth_proxy:
 
 psram:
@@ -133,7 +131,8 @@ wifi:
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
     ssid: "${wifi_fallback_ssid}"
-    password: !secret wifi_password
+    password: !secret fallback_password
+
 
 time:
   - platform: homeassistant
@@ -155,39 +154,25 @@ script:
             - light.turn_on: backlight
             - lvgl.resume:
             - lvgl.widget.redraw:
-  - id: update_target1_distance
+  - id: wake_up_display_on_approaching
     then:
-      - lvgl.label.update:
-          id: target1_obj_distance
-          text: !lambda |-
-            if (id(target_1_distance).has_state()) {
-              char buf[10];
-              snprintf(buf, sizeof(buf), "%.1fm", id(target_1_distance).state / 1000.0);
-              return std::string(buf);
-            }
-            return "---";
-  - id: update_target2_distance
-    then:
-      - lvgl.label.update:
-          id: target2_obj_distance
-          text: !lambda |-
-            if (id(target_2_distance).has_state()) {
-              char buf[10];
-              snprintf(buf, sizeof(buf), "%.1fm", id(target_2_distance).state / 1000.0);
-              return std::string(buf);
-            }
-            return "---";
-  - id: update_target3_distance
-    then:
-      - lvgl.label.update:
-          id: target3_obj_distance
-          text: !lambda |-
-            if (id(target_3_distance).has_state()) {
-              char buf[10];
-              snprintf(buf, sizeof(buf), "%.1fm", id(target_3_distance).state / 1000.0);
-              return std::string(buf);
-            }
-            return "---";
+      - if:
+          condition:
+            any:
+              - sensor.in_range:
+                  id: target_1_distance
+                  above: 1
+                  below: 2000
+              - sensor.in_range:
+                  id: target_2_distance
+                  above: 1
+                  below: 2000
+              - sensor.in_range:
+                  id: target_3_distance
+                  above: 1
+                  below: 2000
+          then:
+            - script.execute: wake_up_display
   - id: time_update
     # update the clock display
     then:
@@ -279,10 +264,39 @@ script:
           else:
             - lvgl.widget.hide:
               - id: target3_obj
-
-web_server:
-  port: 80
-  version: 3
+  - id: update_target1_distance
+    then:
+      - lvgl.label.update:
+          id: target1_obj_distance
+          text: !lambda |-
+            if (id(target_1_distance).has_state()) {
+              char buf[10];
+              snprintf(buf, sizeof(buf), "%.1fm", id(target_1_distance).state / 1000.0);
+              return std::string(buf);
+            }
+            return "---";
+  - id: update_target2_distance
+    then:
+      - lvgl.label.update:
+          id: target2_obj_distance
+          text: !lambda |-
+            if (id(target_2_distance).has_state()) {
+              char buf[10];
+              snprintf(buf, sizeof(buf), "%.1fm", id(target_2_distance).state / 1000.0);
+              return std::string(buf);
+            }
+            return "---";
+  - id: update_target3_distance
+    then:
+      - lvgl.label.update:
+          id: target3_obj_distance
+          text: !lambda |-
+            if (id(target_3_distance).has_state()) {
+              char buf[10];
+              snprintf(buf, sizeof(buf), "%.1fm", id(target_3_distance).state / 1000.0);
+              return std::string(buf);
+            }
+            return "---";
 
 captive_portal:
 
@@ -332,13 +346,7 @@ sensor:
         on_value:
           then:
             - script.execute: update_target1_distance
-            - if:
-                condition:
-                  sensor.in_range:
-                      id: target_1_distance
-                      below: 700
-                then:
-                  - script.execute: wake_up_display
+            - script.execute: wake_up_display_on_approaching
       resolution:
         name: Target-1 Resolution
         disabled_by_default: true
@@ -361,13 +369,7 @@ sensor:
         on_value:
           then:
             - script.execute: update_target2_distance
-            - if:
-                condition:
-                  sensor.in_range:
-                      id: target_2_distance
-                      below: 700
-                then:
-                  - script.execute: wake_up_display
+            - script.execute: wake_up_display_on_approaching
       resolution:
         name: Target-2 Resolution
         disabled_by_default: true
@@ -390,13 +392,7 @@ sensor:
         on_value:
           then:
             - script.execute: update_target3_distance
-            - if:
-                condition:
-                  sensor.in_range:
-                      id: target_3_distance
-                      below: 700
-                then:
-                  - script.execute: wake_up_display
+            - script.execute: wake_up_display_on_approaching
       resolution:
         name: Target-3 Resolution
         disabled_by_default: true
@@ -549,7 +545,7 @@ lvgl:
                   id: lv_button_1_icon
               - label:
                   align: bottom_left
-                  text: "Light 1"
+                  text: $light_1_display_name
                   long_mode: dot
             on_click:
               light.toggle: internal_light_1
@@ -567,7 +563,7 @@ lvgl:
                   id: lv_button_2_icon
               - label:
                   align: bottom_left
-                  text: "Light2"
+                  text: $light_2_display_name
                   long_mode: dot
             on_click:
               light.toggle: internal_light_2
@@ -585,7 +581,7 @@ lvgl:
                   id: lv_button_3_icon
               - label:
                   align: bottom_left
-                  text: "Light3"
+                  text: $light_3_display_name
                   long_mode: dot
             on_click:
               light.toggle: internal_light_3
@@ -599,14 +595,14 @@ lvgl:
               - label:
                   text_font: light40
                   align: top_left
-                  text: $mdi_lightbulb
+                  text: $custom_switch_1_icon
                   id: lv_button_custom_1_icon
               - label:
                   align: bottom_left
-                  text: "Light4"
+                  text: $custom_switch_1_display_name
                   long_mode: dot
             on_click:
-              button.press: custom_button_1
+              switch.toggle: custom_switch_1
         - button:
             grid_cell_row_pos: 2
             grid_cell_column_pos: 0
@@ -617,14 +613,14 @@ lvgl:
               - label:
                   text_font: light40
                   align: top_left
-                  text: $mdi_lightbulb
+                  text: $custom_switch_2_icon
                   id: lv_button_custom_2_icon
               - label:
                   align: bottom_left
-                  text: "Light4"
+                  text: $custom_switch_2_display_name
                   long_mode: dot
             on_click:
-              button.press: custom_button_2
+              switch.toggle: custom_switch_2
         - button:
             grid_cell_row_pos: 2
             grid_cell_column_pos: 1
@@ -635,14 +631,14 @@ lvgl:
               - label:
                   text_font: light40
                   align: top_left
-                  text: $mdi_lightbulb
+                  text: $custom_switch_3_icon
                   id: lv_button_custom_3_icon
               - label:
                   align: bottom_left
-                  text: "Light4"
+                  text: $custom_switch_3_display_name
                   long_mode: dot
             on_click:
-              button.press: custom_button_3
+              switch.toggle: custom_switch_3
         - meter: # 시계
             grid_cell_row_pos: 1
             grid_cell_column_pos: 1
@@ -742,7 +738,10 @@ lvgl:
                 align: BOTTOM_MID
                 text: 'Not connected'
                 text_color: ha_blue
-    # 레이더 타겟 시각화 페이지 추가
+
+    #-------------------------------------------
+    # LD2450 실시간 레이더 추적 화면
+    #-------------------------------------------
     - id: radar_page
       skip: false
       layout:
@@ -754,7 +753,6 @@ lvgl:
       bg_color: 0x000000
       bg_opa: cover
       widgets:
-        # 레이더 배경
         - obj:
             grid_cell_row_pos: 0
             grid_cell_column_pos: 0
@@ -914,7 +912,7 @@ lvgl:
         - button:
             grid_cell_row_pos: 0
             grid_cell_column_pos: 0
-            height: 50
+            height: 70
             checkable: false
             id: radar_go_to_prev
             widgets:
@@ -1185,6 +1183,72 @@ switch:
       name: "Bluetooth"
     multi_target:
       name: "Multi Target Tracking"
+  - platform: template
+    id: custom_switch_1
+    name: custom_switch_1
+    optimistic: True
+    on_turn_on:
+      then:
+        - lvgl.widget.update:
+            id: lv_button_custom_1_icon
+            text_color: 0xFFFF00
+        - lvgl.widget.update:
+            id: lv_button_custom_1
+            state:
+              checked: true
+    on_turn_off:
+      then:
+        - lvgl.widget.update:
+            id: lv_button_custom_1_icon
+            text_color: 0xB6B6B6
+        - lvgl.widget.update:
+            id: lv_button_custom_1
+            state:
+              checked: false
+  - platform: template
+    id: custom_switch_2
+    name: custom_switch_2
+    optimistic: True
+    on_turn_on:
+      then:
+        - lvgl.widget.update:
+            id: lv_button_custom_2_icon
+            text_color: 0xFFFF00
+        - lvgl.widget.update:
+            id: lv_button_custom_2
+            state:
+              checked: true
+    on_turn_off:
+      then:
+        - lvgl.widget.update:
+            id: lv_button_custom_2_icon
+            text_color: 0xB6B6B6
+        - lvgl.widget.update:
+            id: lv_button_custom_2
+            state:
+              checked: false
+  - platform: template
+    id: custom_switch_3
+    name: custom_switch_3
+    optimistic: True
+    on_turn_on:
+      then:
+        - lvgl.widget.update:
+            id: lv_button_custom_3_icon
+            text_color: 0xFFFF00
+        - lvgl.widget.update:
+            id: lv_button_custom_3
+            state:
+              checked: true
+    on_turn_off:
+      then:
+        - lvgl.widget.update:
+            id: lv_button_custom_3_icon
+            text_color: 0xB6B6B6
+        - lvgl.widget.update:
+            id: lv_button_custom_3
+            state:
+              checked: false
 
 select:
   - platform: ld2450
@@ -1203,18 +1267,9 @@ button:
     restart:
       name: "LD2450 Restart"
       entity_category: "config"
-  - platform: template
-    name: custom_button_1
-    id: custom_button_1
-  - platform: template
-    name: custom_button_2
-    id: custom_button_2
-  - platform: template
-    name: custom_button_3
-    id: custom_button_3
 
 interval:
-  - interval: 0.2s
+  - interval: 0.5s
     then:
       if:
         condition:
