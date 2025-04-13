@@ -2,11 +2,11 @@
 guition 4'' display ESP32-S3-4848S040 with LD2450 sensor
 
 ### 재료
-- guition 4'' display ESP32-S3-4848S040 (3 relay 모델 기준)
-- LD2450 sensor
+- guition 4'' display ESP32-S3-4848S040 (3 relay 모델 기준 https://ko.aliexpress.com/item/1005006335587633.html) 
+- LD2450 sensor (https://ko.aliexpress.com/item/1005007198006311.html)
 - MX 1.25 4pin cable (https://ko.aliexpress.com/item/1005007277110532.html) : guition display에 연결
 - ZH 1.5 4pin cable (https://ko.aliexpress.com/item/1005007277030322.html) : LD2450에 연결
-- M4 둥근머리 볼트 25mm (더 길어도 관계없음. 스위치 고정에 쓰이는 볼트 재활용가능)
+- M4 둥근머리 볼트 25mm (더 길어도 관계없음. 스위치 고정에 쓰이는 볼트(이도피스) 재활용가능)
 - [3D 프린팅 파츠](https://github.com/wooooooooooook/guition480_with_ld2450/tree/main/printing%20parts)
 
 ### 하드웨어
@@ -29,6 +29,7 @@ guition 4'' display ESP32-S3-4848S040 with LD2450 sensor
 
 포트 노출을 위해 뒷판을 잘라내야함. (사진 보다 깊게 잘라야 간섭이 없음)
 
+
 ### 어댑터 3D 프린터 출력
 ![image](https://github.com/user-attachments/assets/7cfcbe32-7a6a-458f-b7b9-c156670a34f7)
 
@@ -36,11 +37,13 @@ guition 4'' display ESP32-S3-4848S040 with LD2450 sensor
 프린팅 파츠에서 `cover.stl`, `plate.stl`을 출력.
 - `plate_v2.stl`은 디스플레이 제거를 쉽게하기위해 하단 지지대를 뚫어놓은 버전입니다. 필요시 이 버전으로 사용하세요. 실제 출력 테스트는 안해봤습니다.
 
+
 ### ESPHome 펌웨어 설치
 벽면에 설치후에는 usb포트노출이 안되므로 최초 1회는 USB-C 연결해서 유선으로 펌웨어설치가 필요함.
 이후에는 OTA로 업데이트가능. 
 [configuration.yaml](https://github.com/wooooooooooook/guition480_with_ld2450/blob/main/esphome%20configuration/guition.yaml)
 YAML을 참조하여 ESPHome 펌웨어 설치.
+
 
 ### 설치하기
 ![image](https://github.com/user-attachments/assets/748dec2e-e754-4aeb-88b1-2e5e764efeb9)
@@ -63,6 +66,7 @@ LD2450케이블을 본체에 연결한뒤 결합하면 완성
 ![image](https://github.com/user-attachments/assets/3f13a045-a6b8-484e-acb1-1dd9a4206324)
 ![image](https://github.com/user-attachments/assets/31ea0772-27b0-45b8-b8c5-89d06812b5d4)
 ![image](https://github.com/user-attachments/assets/d90dffc9-d535-4843-857b-d76246447aa5)
+
 
 ### 철거하기
 - 커버 아래의 1자 틈에 1자드라이버를 넣고 비틀어 커버를 분리.
