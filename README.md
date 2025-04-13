@@ -34,6 +34,7 @@ guition 4'' display ESP32-S3-4848S040 with LD2450 sensor
 
 [프린팅파츠](https://github.com/wooooooooooook/guition480_with_ld2450/tree/main/printing%20parts)
 프린팅 파츠에서 `cover.stl`, `plate.stl`을 출력.
+- `plate_v2.stl`은 디스플레이 제거를 쉽게하기위해 하단 지지대를 뚫어놓은 버전입니다. 필요시 이 버전으로 사용하세요. 실제 출력 테스트는 안해봤습니다.
 
 ### ESPHome 펌웨어 설치
 벽면에 설치후에는 usb포트노출이 안되므로 최초 1회는 USB-C 연결해서 유선으로 펌웨어설치가 필요함.
