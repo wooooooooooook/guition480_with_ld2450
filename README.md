@@ -44,7 +44,8 @@ YAML을 참조하여 ESPHome 펌웨어 설치.
 ### 설치하기
 ![image](https://github.com/user-attachments/assets/748dec2e-e754-4aeb-88b1-2e5e764efeb9)
 
-벽면에 사진과 같이 plate에 LD2450를 장착하고 케이블을 잘 정리해서 고정시킨다.
+벽면에 사진과 같이 plate에 LD2450를 장착하고(그냥 걸쳐져있는 방식) 케이블을 잘 정리해서 볼트로 고정시킨다.
+케이블의 경우 MX1.25와 ZH1.5케이블을 5V->5V, Rx->Tx, Tx->Rx, Gnd->Gnd가 되도록 연결했음. 
 
 ![image](https://github.com/user-attachments/assets/58a36884-8bc0-4e73-afeb-f3ff0228e65f)
 
