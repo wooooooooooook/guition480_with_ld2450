@@ -63,6 +63,11 @@ LD2450케이블을 본체에 연결한뒤 결합하면 완성
 ![image](https://github.com/user-attachments/assets/31ea0772-27b0-45b8-b8c5-89d06812b5d4)
 ![image](https://github.com/user-attachments/assets/d90dffc9-d535-4843-857b-d76246447aa5)
 
+### 철거하기
+- 커버 아래의 1자 틈에 1자드라이버를 넣고 비틀어 커버를 분리.
+- 디스플레이의 좌우를 잡고 잘 뜯기.. ( 하단의 고정 홈을 누를 도구가 있다면 누르면서 뽑기)
+- 이후 보이는 볼트를 제거하면서 탈거할 수 있음.
+
 
 ### 펌웨어 기본 기능
 - Light 1~3은 후면 L1~3의 릴레이를 작동시킴
