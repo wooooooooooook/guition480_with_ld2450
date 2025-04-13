@@ -4,9 +4,10 @@ guition 4'' display ESP32-S3-4848S040 with LD2450 sensor
 ### 재료
 - guition 4'' display ESP32-S3-4848S040 (3 relay 모델 기준)
 - LD2450 sensor
-- MX 1.25 4pin cable (https://ko.aliexpress.com/item/1005007277110532.html)
-- ZH 1.5 4pin cable (https://ko.aliexpress.com/item/1005007277030322.html)
+- MX 1.25 4pin cable (https://ko.aliexpress.com/item/1005007277110532.html) : guition display에 연결
+- ZH 1.5 4pin cable (https://ko.aliexpress.com/item/1005007277030322.html) : LD2450에 연결
 - M4 둥근머리 볼트 25mm (더 길어도 관계없음. 스위치 고정에 쓰이는 볼트 재활용가능)
+- [3D 프린팅 파츠](https://github.com/wooooooooooook/guition480_with_ld2450/tree/main/printing%20parts)
 
 ### 하드웨어
 ![20250404_100520](https://github.com/user-attachments/assets/110cf85d-78dd-4490-9936-346bdb5f3f59)
@@ -51,7 +52,7 @@ YAML을 참조하여 ESPHome 펌웨어 설치.
 
 ![image](https://github.com/user-attachments/assets/76d232d0-d741-4f59-ac8e-7e8499bfe7e6)
 
-M4 볼트로 고정된 모습
+M4 볼트로 고정된 모습. (3D 프린팅에 나사를 밀어넣는 방식이므로 너무 세게 조이면 안됩니다.)
 
 ![image](https://github.com/user-attachments/assets/33ef70d4-cff1-4161-bc7d-31d5e897e3f9)
 
