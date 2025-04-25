@@ -106,9 +106,7 @@ psram:
 
 # Enable logging
 logger:
-  hardware_uart: "UART1" # UART0 will be used by LD2450
-  level: INFO
-  baud_rate: 0 # UART1으로 로거출력이 발생할경우 유령터치증상 발생
+  baud_rate: 0 # 하드웨어 로거가 사용할 UART없음. 충돌방지 위해 비활성화.
 
 # Enable Home Assistant API
 api:
